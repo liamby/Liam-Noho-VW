@@ -1,0 +1,231 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "babylon.js glTF exporter for 3dsmax 2023 v20221031.2"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0,
+        1
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "translation": [
+        -1.78168213,
+        -0.05996521,
+        -1.5699507
+      ],
+      "rotation": [
+        0.7071068,
+        0.0,
+        0.0,
+        0.7071067
+      ],
+      "name": "Sphere001"
+    },
+    {
+      "camera": 0,
+      "translation": [
+        -0.03248842,
+        -0.05996521,
+        -4.048651
+      ],
+      "rotation": [
+        -0.06399359,
+        -0.849903464,
+        -0.0662741959,
+        -0.5188224
+      ],
+      "scale": [
+        1.0,
+        1.00000012,
+        0.99999994
+      ],
+      "name": "Cameratest"
+    }
+  ],
+  "cameras": [
+    {
+      "perspective": {
+        "yfov": 0.457822353,
+        "zfar": 10000.0,
+        "znear": 0.1
+      },
+      "type": "perspective",
+      "name": "Cameratest"
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 1,
+            "NORMAL": 2,
+            "TEXCOORD_0": 3
+          },
+          "indices": 0
+        }
+      ],
+      "name": "Sphere001"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5123,
+      "count": 2880,
+      "type": "SCALAR",
+      "name": "accessorIndices"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 559,
+      "max": [
+        0.26439184,
+        0.26439184,
+        0.26439184
+      ],
+      "min": [
+        -0.26439184,
+        -0.26439184,
+        -0.26439184
+      ],
+      "type": "VEC3",
+      "name": "accessorPositions"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 6708,
+      "componentType": 5126,
+      "count": 559,
+      "type": "VEC3",
+      "name": "accessorNormals"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 559,
+      "type": "VEC2",
+      "name": "accessorUVs"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 101,
+      "max": [
+        3.33333325
+      ],
+      "min": [
+        0.0
+      ],
+      "type": "SCALAR",
+      "name": "accessorAnimationInput"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 101,
+      "type": "VEC3",
+      "name": "accessorAnimationPositions"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 404,
+      "componentType": 5126,
+      "count": 101,
+      "max": [
+        3.33333325
+      ],
+      "min": [
+        0.0
+      ],
+      "type": "SCALAR",
+      "name": "accessorAnimationInput"
+    },
+    {
+      "bufferView": 4,
+      "byteOffset": 1212,
+      "componentType": 5126,
+      "count": 101,
+      "type": "VEC3",
+      "name": "accessorAnimationPositions"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 5760,
+      "name": "bufferViewScalar"
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 5760,
+      "byteLength": 13416,
+      "byteStride": 12,
+      "name": "bufferViewFloatVec3"
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 19176,
+      "byteLength": 4472,
+      "byteStride": 8,
+      "name": "bufferViewFloatVec2"
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 23648,
+      "byteLength": 808,
+      "name": "bufferViewAnimationFloatScalar"
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 24456,
+      "byteLength": 2424,
+      "name": "bufferViewAnimationFloatVec3"
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "Cam_Export_Test.bin",
+      "byteLength": 26880
+    }
+  ],
+  "animations": [
+    {
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 0,
+            "path": "translation"
+          }
+        },
+        {
+          "sampler": 1,
+          "target": {
+            "node": 1,
+            "path": "translation"
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "input": 4,
+          "output": 5
+        },
+        {
+          "input": 6,
+          "output": 7
+        }
+      ],
+      "name": "All Animations"
+    }
+  ]
+}

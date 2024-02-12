@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 37 37">
+  <g id="Group_1" data-name="Group 1" transform="translate(-349 -435)" opacity="0.442">
+    <g id="MDI_close" data-name="MDI / close" transform="translate(356 442)">
+      <rect id="Boundary" width="24" height="24" fill="#5f7081" opacity="0"/>
+      <path id="Path_close" data-name="Path / close" d="M19,6.41,17.59,5,12,10.59,6.41,5,5,6.41,10.59,12,5,17.59,6.41,19,12,13.41,17.59,19,19,17.59,13.41,12Z" fill="#5f7081"/>
+    </g>
+    <g id="Ellipse_5" data-name="Ellipse 5" transform="translate(349 435)" fill="none" stroke="#5f7081" stroke-width="2">
+      <circle cx="18.5" cy="18.5" r="18.5" stroke="none"/>
+      <circle cx="18.5" cy="18.5" r="17.5" fill="none"/>
+    </g>
+  </g>
+</svg>

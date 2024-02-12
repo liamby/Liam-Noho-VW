@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>Virtual Well</title>
+		
+		<link rel="stylesheet" type="text/css" href="lib/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="lib/fontawesome/css/all.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/default.css" />
+		
+		<script src="lib/jquery/jquery.min.js"></script>
+		
+        <!-- Babylon.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+        <script src="https://assets.babylonjs.com/generated/Assets.js"></script>
+        <script src="https://cdn.babylonjs.com/recast.js"></script>
+        <script src="https://cdn.babylonjs.com/ammo.js"></script>
+        <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+        <script src="https://cdn.babylonjs.com/cannon.js"></script>
+        <script src="https://cdn.babylonjs.com/Oimo.js"></script>
+        <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
+        <script src="https://cdn.babylonjs.com/babylon.js"></script>
+        <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+        <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+        <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+        <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+        <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+        <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+
+        <style>
+            html, body {
+				position: relative;
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+			
+			#canvasZone {
+				position: relative;
+                width: 100%;
+                height: 100%;
+            }
+			
+			.votd{
+				display: none;
+				position: absolute;
+				top: 5%;
+				left: 5%;
+				width: 500px;
+				background: #fff;
+				color: #000;
+			}
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+		<script src="cameraMovements.js"></script>
+		<script src="spriteMovements.js"></script>
+    </head>
+<body>
+	<div id="customLoadingScreenDiv" class="customLoadingScreenDiv">
+		<div class="loading_content">
+			<p>Virtual Well</p>
+			<p class="sceneLoading">The Scene is currently loading <div id="loading" class="loading">0<i class="fas fa-percentage"></i></div></p>
+			<hr>
+		</div>
+	</div>
+	
+    <div id="canvasZone">
+		<div class="votd">
+			<div class="ref"></div>
+			<div class="verse"></div>
+		</div>
+		<canvas id="renderCanvas"></canvas>
+	</div>
+    <script>
+		var data = '';
+		var data_filter = '';
+		var ref = '';
+		var verse = '';
+		
+		$.ajax({
+			url: 'data/getVerse.php',
+			type: 'GET',
+			datatype: 'json',
+			success: function (json) { 
+				data = JSON.parse(json);
+				console.log(data);
+				ref = data.votd.reference;
+				verse = data.votd.content;
+				verse = verse.replace (/&#8220;/g, "");
+				$( '#canvasZone .votd .ref' ).html(data.votd.reference);
+				$( '#canvasZone .votd .verse' ).html(data.votd.content);
+			},
+			/*success: function (json) { 
+				var str = json;
+				str = str.substring(str.indexOf(":") + 1);
+				str = str.slice(0, -1); 
+				data = JSON.parse(str);
+				console.log(data);
+				ref = data.verses[0].name;
+				verse = data.verses[0].text;
+				console.log(ref);
+				console.log(verse);
+			},*/
+			error: function (jqXHR, textStatus, errorThrown) {
+				console.log(jqXHR);
+				console.log(textStatus);
+				console.log(errorThrown);
+			}
+		});
+		
+        var canvas = document.getElementById("renderCanvas");
+
+        var startRenderLoop = function (engine, canvas) {
+            engine.runRenderLoop(function () {
+                if (sceneToRender && sceneToRender.activeCamera) {
+                    sceneToRender.render();
+                }
+            });
+        }
+
+        var engine = null;
+        var engine = null;
+        var scene = null;
+		var camera = '';
+        var sceneToRender = null;
+		var switched = false;
+		
+		var path3d;
+		var targetPositionIndex = 0;
+
+        var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
+        var createScene = function () {
+			// This creates a basic Babylon Scene object (non-mesh)
+			var scene = new BABYLON.Scene(engine);
+			BABYLON.SceneLoader.ShowLoadingScreen = false;
+			
+			// This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+			var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+			light.intensity = 0.7;
+
+			// Skybox
+			var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 1000}, scene);
+			var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+			skyboxMaterial.backFaceCulling = false;
+			skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/small_rural_road_2k_env.dds", scene);
+			skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+			skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+			skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+			skyboxMaterial.disableLighting = true;
+			skybox.material = skyboxMaterial;
+
+			// Camera path variables
+			var filenameString = "Cam_Export_Test.gltf";
+			var isLoop = true;
+			var debug = true; 
+
+			// create camera track and carts
+			// path3d = createPathFromImport(filenameString, isLoop, debug, scene);
+			createSpritePathFromImport(filenameString, isLoop, debug, scene);
+			
+			BABYLON.SceneLoader.Append("models2/", "VW_Opening_Baked.gltf", scene, function (scene) {
+				
+				camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 1.25, 0), scene);
+				camera.fov = 1.1;
+				camera.keysUp.push(87); // "w"
+				camera.keysDown.push(83); // "s"
+				camera.keysLeft.push(65); // "a"
+				camera.keysRight.push(68); // "d"
+				camera.speed = 0.25;
+				camera.angularSensibilityX = 1;
+				camera.angularSensibilityY = 1;
+				camera.minZ = 0.1;
+				camera.attachControl(canvas, false);
+
+				scene.activeCamera.panningSensibility = 99;
+				
+				var hdrTexture = new BABYLON.CubeTexture("assets/small_rural_road_2k_env.dds", scene);
+				hdrTexture.gammaSpace = false;
+				scene.environmentTexture = hdrTexture;
+				scene.environmentIntensity = 1;
+				
+				var navmaterial = new BABYLON.StandardMaterial(scene);
+				navmaterial.alpha = 1;
+				navmaterial.diffuseColor = new BABYLON.Color3.FromHexString('#fff5d7');
+				
+				const navMarker0 = BABYLON.MeshBuilder.CreateCylinder('nav0', {
+					diameter: 0.4,
+					height: 0.001
+				});
+				navMarker0.position.x = 0;
+				navMarker0.position.y = 0.01;
+				navMarker0.position.z = 0;
+				navMarker0.material = navmaterial;
+				
+				const navMarker1 = BABYLON.MeshBuilder.CreateCylinder('nav1', {
+					diameter: 0.4,
+					height: 0.001
+				});
+				navMarker1.position.x = 2.8;
+				navMarker1.position.y = 0.01;
+				navMarker1.position.z = 4.0;
+				navMarker1.material = navmaterial;
+				
+				const navMarker2 = BABYLON.MeshBuilder.CreateCylinder('nav2', {
+					diameter: 0.4,
+					height: 0.001
+				});
+				navMarker2.position.x = 2.8;
+				navMarker2.position.y = 0.01;
+				navMarker2.position.z = -4.0;
+				navMarker2.material = navmaterial;
+				
+				const navMarker3 = BABYLON.MeshBuilder.CreateCylinder('nav3', {
+					diameter: 0.4,
+					height: 0.001
+				});
+				navMarker3.position.x = -2.8;
+				navMarker3.position.y = 0.01;
+				navMarker3.position.z = 4.0;
+				navMarker3.material = navmaterial;
+				
+				const navMarker4 = BABYLON.MeshBuilder.CreateCylinder('nav4', {
+					diameter: 0.4,
+					height: 0.001
+				});
+				navMarker4.position.x = -2.8;
+				navMarker4.position.y = 0.01;
+				navMarker4.position.z = -4.0;
+				navMarker4.material = navmaterial;
+				
+				 // GUI
+				var plane1 = BABYLON.Mesh.CreatePlane("plane1", 1);
+				plane1.position.x = 1.6;
+				plane1.position.y = 1.5;
+				plane1.position.z = -5.25;
+				plane1.scaling.x = 2;
+				plane1.rotation.y = 3.15;
+				
+				var plane2 = BABYLON.Mesh.CreatePlane("plane2", 1);
+				plane2.position.x = 0.2;
+				plane2.position.y = 1.5;
+				plane2.position.z = -5.25;
+				plane2.scaling.x = 2;
+				plane2.rotation.y = 3.15;
+				
+				//plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+
+				var advancedTexture1 = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(plane1, 500*plane1.scaling.x, 500*plane1.scaling.y);
+				var advancedTexture2 = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(plane2, 650*plane2.scaling.x, 650*plane2.scaling.y);
+
+				const container1 = new BABYLON.GUI.Rectangle();
+				container1.thickness = 0;
+				container1.hasAlpha = true;
+				container1.isHitTestVisible = false;
+				container1.heightInPixels = 300;
+				container1.backFaceCulling = true;
+				
+				const container2 = new BABYLON.GUI.Rectangle();
+				container2.thickness = 0;
+				container2.hasAlpha = true;
+				//container2.background = 'white';
+				container2.isHitTestVisible = false;
+				container2.heightInPixels = 300;
+				container2.backFaceCulling = true;
+
+				const text1 = new BABYLON.GUI.TextBlock();
+				text1.textWrapping = true;
+				text1.isHitTestVisible = false;
+				text1.text = ref;
+				text1.fontSizeInPixels = 56;
+				text1.backFaceCulling = true;
+				
+				const text2 = new BABYLON.GUI.TextBlock();
+				text2.textWrapping = true;
+				text2.isHitTestVisible = false;
+				text2.text = verse;
+				text2.fontSizeInPixels = 56;
+				text2.backFaceCulling = true;
+				
+				container1.addControl(text1);
+				advancedTexture1.addControl(container1);
+				
+				container2.addControl(text2);
+				advancedTexture2.addControl(container2);
+				
+				var sphereMat = new BABYLON.StandardMaterial("sphereMat", scene);
+				sphereMat.diffuseColor = BABYLON.Color3.Purple();
+				sphereMat.backFaceCulling = false;
+				sphereMat.alpha = 0.3;
+				
+				var sphereMusic1 = BABYLON.Mesh.CreateSphere("musicsphere", 10, 0.2, scene);
+				sphereMusic1.material = sphereMat;
+				sphereMusic1.position = new BABYLON.Vector3(0.4, 0.5, 5.25);
+				sphereMusic1.diameter = 0.2;
+				
+				var music1 = new BABYLON.Sound("Violons11", "assets/birds.mp3", scene, null, { 
+					loop: true, 
+					autoplay: true, 
+					spatialSound: true, 
+					distanceModel: "exponential",
+					rolloffFactor: 3
+				});
+				music1.setPosition(new BABYLON.Vector3(0.4, 0.5, 5.25));
+
+			},
+			function (evt) {
+				// onProgress
+				var loadedPercent = 0;
+				if (evt.lengthComputable) {
+					loadedPercent = (evt.loaded * 100 / evt.total).toFixed();
+				} else {
+					var dlCount = evt.loaded / (1024 * 1024);
+					loadedPercent = Math.floor(dlCount * 100.0) / 100.0;
+				}
+				if(loadedPercent == 100){
+					setTimeout(function(){ 
+						$(".customLoadingScreenDiv").fadeOut();
+					}, 2500);
+					console.log("scene is now loaded");
+				}
+				
+				document.getElementById("loading").innerHTML = loadedPercent+' <i class="fas fa-percentage"></i>';
+			});
+			
+			scene.onPointerObservable.add((pointerInfo) => {
+        		switch (pointerInfo.type) {
+					case BABYLON.PointerEventTypes.POINTERMOVE:
+						
+					break;
+					case BABYLON.PointerEventTypes.POINTERDOWN:
+					 	//console.log("POINTER DOWN");
+						currentPosition = pointerInfo.pickInfo.pickedMesh.absolutePosition;
+					break;
+        			case BABYLON.PointerEventTypes.POINTERUP:
+        				console.log(pointerInfo);
+        				//console.log("scene pointer event - pickedMesh:", (pointerInfo.pickInfo.pickedMesh.id));
+						label = pointerInfo.pickInfo.pickedMesh.name;
+						console.log(label);
+						var check = label.includes('Cat');
+						var nav = label.includes('nav');
+						var fountain = label.includes('fountain');;
+						//console.log(pointerInfo);
+						var comparePosition = pointerInfo.pickInfo.pickedMesh.absolutePosition;
+						if(currentPosition != comparePosition){
+							return;
+						}
+						
+						else if(fountain){
+							switched = !switched;
+							if(switched) {
+								// Start the particle system
+								particleSystem.start();
+							}
+							else {
+								// Stop the particle system
+								particleSystem.stop();
+							}
+						}
+						else if(nav){
+							console.log('nav clicked');
+							console.log(currentPosition);
+							var position = pointerInfo.pickInfo.pickedMesh.absolutePosition;
+							
+							// This is the func that is call on-animation-end.
+							var itEnded = function() {
+								// if anim is ended, set freelook to true, again.
+								freelook = true;
+								console.log("animation ended - freelook set to true")
+							}
+							
+							var animationcamera = new BABYLON.Animation(
+								"myAnimationcamera", 
+								"position", 
+								30, 
+								BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+								BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+							);
+					 
+							// console.log(animationcamera);
+							var keys = []; 
+
+							keys.push({
+								frame: 0,
+								value: camera.position.clone(),
+								// outTangent: new BABYLON.Vector3(1, 0, 0)
+							});
+
+							keys.push({
+								frame: 100,
+								// inTangent: new BABYLON.Vector3(-1, 0, 0),
+								value: new BABYLON.Vector3(currentPosition.x, currentPosition.y+1.55, currentPosition.z),
+							});
+
+							animationcamera.setKeys(keys);
+
+							camera.animations = [];
+							camera.animations.push(animationcamera);
+
+							console.log("animation about to start. So, freelook set to false")
+							// about to animate.  set freelook to false.
+							freelook = false;
+							scene.beginAnimation(camera, 0, 100, false, 1, itEnded);
+						}
+        			break;
+                }
+            });
+
+
+			return scene;
+		};
+               
+		window.initFunction = async function() {
+                    
+        var asyncEngineCreation = async function() {
+            try {
+                return createDefaultEngine();
+            } catch(e) {
+                console.log("the available createEngine function failed. Creating the default engine instead");
+                return createDefaultEngine();
+            }
+        }
+
+        window.engine = await asyncEngineCreation();
+        if (!engine) throw 'engine should not be null.';
+        startRenderLoop(engine, canvas);
+        window.scene = createScene();};
+        initFunction().then(() => {sceneToRender = scene                    
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+		
+    </script>
+</body>
+</html>
