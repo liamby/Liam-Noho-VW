@@ -244,8 +244,8 @@ function createPathFromImport(filename, isLoop, debug, scene) {
 
             if (debug) {
                 // Show path and axis
-                // showPath3D(path3d, 0.5);    
-                // showAxis(50, scene);
+                 showPath3D(path3d, 0.5);    
+                 showAxis(50, scene);
                 // Create cart for visualisation 
                 var {cam, tar} = createCarts(scene);
                 cameraCart = cam;

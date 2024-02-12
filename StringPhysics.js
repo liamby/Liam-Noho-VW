@@ -8,44 +8,44 @@ function makeStrings(strings) {
     var stringsList = [
         {
             name: "chord1",
-            topCoordinate: new BABYLON.Vector3(-0.6 -2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(-0.6 -2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(-0.6 -2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(-0.6 -2, 3.4, 5),
             audioFile: "one"
         },
         {
             name: "chord2",
-            topCoordinate: new BABYLON.Vector3(-0.4 -2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(-0.4 -2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(-0.4 -2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(-0.4 -2, 3.4, 5),
             audioFile: "two"
         },
         {
             name: "chord3",
-            topCoordinate: new BABYLON.Vector3(-0.2 -2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(-0.2 -2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(-0.2 -2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(-0.2 -2, 3.4, 5),
             audioFile: "three"
         },
         {
             name: "chord4",
-            topCoordinate: new BABYLON.Vector3(0-2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(0-2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(0-2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(0-2, 3.4, 5),
             audioFile: "four"
         },
         {
             name: "chord5",
-            topCoordinate: new BABYLON.Vector3(0.2 -2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(0.2 -2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(0.2 -2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(0.2 -2, 3.4, 5),
             audioFile: "five"
         },
         {
             name: "chord6",
-            topCoordinate: new BABYLON.Vector3(0.4 -2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(0.4 -2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(0.4 -2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(0.4 -2, 3.4, 5),
             audioFile: "six"
         },
         {
             name: "chord7",
-            topCoordinate: new BABYLON.Vector3(0.6 -2, 5.24, 6),
-            bottomCoordinate: new BABYLON.Vector3(0.6 -2, 3.4, 6),
+            topCoordinate: new BABYLON.Vector3(0.6 -2, 5.24, 5),
+            bottomCoordinate: new BABYLON.Vector3(0.6 -2, 3.4, 5),
             audioFile: "seven"
         },
     ];
